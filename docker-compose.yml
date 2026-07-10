@@ -36,7 +36,7 @@ services:
   
   api:
     build:
-      context: .
+      context: ./backend
       target: builder
     networks:
       - hanarchive-network
