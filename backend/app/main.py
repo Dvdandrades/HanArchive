@@ -1,4 +1,8 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends, HTTPException
+from db.session import get_db
+from models.models import Document
+from sqlalchemy.orm import Session
+from schemas.schemas import DocumentCreate, DocumentResponse
 
 app = FastAPI(title="HanArchive API")
 
@@ -7,13 +11,29 @@ def root():
     return {"message": "HanArchive API"}
 
 @app.post("/documents")
-def post_documents():
-    pass
+def create_document(document_in: DocumentCreate, db: Session = Depends(get_db)):
+    new_document = Document(
+        title=document_in.title,
+        language=document_in.language,
+        original_text=document_in.original_text
+    )
+    db.add(new_document)
+    db.commit()
+    db.refresh(new_document)
 
-@app.get("/documents")
-def get_all_documents():
-    pass
+    return {"id": new_document.id}
 
-@app.get("/documents/{id}")
-def get_one_documents():
-    pass
+@app.get("/documents", response_model=DocumentResponse)
+def get_all_documents(db: Session = Depends(get_db)):
+    documents = db.query(Document).all()
+    return documents
+    
+
+@app.get("/documents/{document_id}", response_model=DocumentResponse)
+def get_document(document_id: int, db: Session = Depends(get_db)):
+    document = db.query(Document).filter(Document.id == document.id).first()
+
+    if document is None:
+        raise HTTPException(status_code=404, detai="Document not found")
+    
+    return document

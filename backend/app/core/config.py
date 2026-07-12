@@ -6,5 +6,8 @@ class Settings(BaseSettings):
     redis_url: str
     app_name: str = "HanArchive"
     debug: bool = False
+    postgres_user: str
+    postgres_pw: str
+    postgres_db: str
 
 settings = Settings()
