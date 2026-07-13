@@ -9,5 +9,6 @@ class Settings(BaseSettings):
     postgres_user: str
     postgres_pw: str
     postgres_db: str
+    
 
 settings = Settings()
