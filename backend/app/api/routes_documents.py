@@ -1,6 +1,6 @@
 from backend.app.models.document import Document
 from sqlalchemy.orm import Session
-from schemas.schemas import DocumentCreate, DocumentResponse
+from backend.app.schemas.document import DocumentCreate, DocumentResponse
 from db.session import get_db
 from app.main import app
 from fastapi import Depends, HTTPException

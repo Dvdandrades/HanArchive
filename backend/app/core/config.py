@@ -9,6 +9,9 @@ class Settings(BaseSettings):
     postgres_user: str
     postgres_pw: str
     postgres_db: str
+    jwt_algorithm: str = "HS256"
+    access_token_expire_minutes: int = 30
+    secret_key: str
     
 
 settings = Settings()

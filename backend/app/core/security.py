@@ -1,30 +1,73 @@
-import secrets
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
+from typing import Any, Optional
+
+from fastapi import Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
+from passlib.context import CryptContext
 
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.security import HTTPBasic, HTTPBasicCredentials
-from fastapi import Depends, HTTPException
-from app.main import app
+from config import settings
 
-SECRET_KEY = "PLACEHOLDER"
-ALGORITHM = "ALG_PLACEHOLDER"
-ACCESS_TOKEN_EXPIRE_MINUTES = 0
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["https://hanarchive.com"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+pwd_context = CryptContext(
+    schemes=["bcrypt"],
+    deprecated=["auto"]
 )
 
-security = HTTPBasic()
+oauth2_scheme = OAuth2PasswordBearer(
+    tokenUrl="/auth/login"
+)
 
-def get_current_username(credentials: HTTPBasicCredentials = Depends(security)):
-    correct_username = secrets.compare_digest(credentials.username, "admin")
-    correct_password = secrets.compare_digest(credentials.password, "password")
-    if not (correct_username and correct_password):
-        raise HTTPException(status_code=401, detail="Incorrect username or password")
-    return credentials.username
+ALGORITHM = settings.jwt_algorithm
+ACCESS_TOKEN_EXPIRE_MINUTES = settings.access_token_expire_minutes
 
+def hash_password(password: str) -> str:
+    return pwd_context.hash(password)
+
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    return pwd_context.verify(plain_password, hashed_password)
+
+def create_access_token(subject: str, expires_delta: Optional[timedelta] = None, extra_claims: Optional[dict[str, Any]] = None) -> str:
+    expire = datetime.now(timezone.utc) + (expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
+    payload = {
+        "sub": subject,
+        "exp": expire,
+    }
+    if extra_claims:
+        payload.update(extra_claims)
+
+    return jwt.encode(payload, settings.secret_key, algorithm=ALGORITHM)
+
+def decode_access_token(token: str) -> dict:
+    try:
+        return jwt.decode(token, settings.secret_key, algorithms=[ALGORITHM])
+    except JWTError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid Token",
+            headers={"WWW-Authenticate": "Bearer"}
+        )
+    
+def get_current_user(token: str = Depends(oauth2_scheme)) -> dict:
+    payload = decode_access_token(token)
+    username = payload.get("sub")
+    if username is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid Token",
+            headers={"WWW-Authenticate": "Bearer"}
+        )
+    return payload
+
+def get_current_username(user: dict = Depends(get_current_user)) -> str:
+    return user["sub"]
+
+def require_role(role: str):
+    def checker(user: dict = Depends(get_current_user)):
+        roles = user.get("roles", [])
+        if role not in roles:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Not enought permits"
+            )
+        return user
+    return checker
