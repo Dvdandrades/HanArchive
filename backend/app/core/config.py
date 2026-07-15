@@ -1,17 +1,27 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from functools import lru_cache
+from pydantic import Field
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
-    database_url: str
-    redis_url: str
-    app_name: str = "HanArchive"
-    debug: bool = False
-    postgres_user: str
-    postgres_pw: str
-    postgres_db: str
-    jwt_algorithm: str = "HS256"
-    access_token_expire_minutes: int = 30
-    secret_key: str
+    model_config = SettingsConfigDict(
+        env_file=".env", 
+        env_file_encoding="utf-8", 
+        extra="ignore"
+    )
+    PROJECT_NAME: str = "HanArchive"
+    VERSION: str = "1.0.0"
+    DATABASE_URL: str
+    SECRET_KEY: str
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
+    JWT_ALGORITHM: str = "HS256"
+    REDIS_URL: str
+    STORAGE_PATH: str = "./storage"
+    CORS_ORIGINS: list[str] = Field(
+        default=["http://localhost:3000"]
+    )
     
+@lru_cache
+def get_settings():
+    return Settings()
 
-settings = Settings()
+settings = get_settings()

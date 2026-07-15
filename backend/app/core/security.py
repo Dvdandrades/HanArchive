@@ -6,11 +6,11 @@ from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 
-from config import settings
+from app.core.config import settings
 
 pwd_context = CryptContext(
     schemes=["bcrypt"],
-    deprecated=["auto"]
+    deprecated="auto"
 )
 
 oauth2_scheme = OAuth2PasswordBearer(
