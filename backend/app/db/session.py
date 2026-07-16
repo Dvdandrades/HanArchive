@@ -1,13 +1,16 @@
+from collections.abc import Generator
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import Session
 from core.config import settings
 
-engine = create_engine(f"postgresql+psycopg2://{settings.postgres_user}:{settings.postgres_pw}@localhost:5432/hanarchivedb")
+engine = create_engine(settings.DATABASE_URL, pool_pre_ping=True, echo=False)
 
-Session = sessionmaker(autoflush=False, bind=engine)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-def get_db():
-    db = Session()
+def get_db() -> Generator[Session, None, None]:
+    db = SessionLocal()
     try:
         yield db
     finally:

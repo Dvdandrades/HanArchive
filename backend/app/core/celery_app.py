@@ -1,7 +1,18 @@
 from celery import Celery
+from app.core.config import settings
 
-celery_app = Celery(
-    "worker",
-    broker="redis://localhost:6379/0",
-    backend="redis://localhost:6379/1"
+celery = Celery(
+    "HanArchive",
+    broker=settings.REDIS_URL,
+    backend=settings.REDIS_URL
+)
+
+celery.conf.update(
+    task_serialize="json",
+    result_serialize="json",
+    accept_content=["json"],
+    timezone="UTC",
+    enable_utc=True,
+    task_track_started=True,
+    result_expires=3600,
 )
