@@ -1,8 +1,14 @@
 from __future__ import annotations
-from datetime import datetime, timezone
-from sqlalchemy import String, Text, DateTime, ForeignKey
+from datetime import datetime
+from sqlalchemy import String, Text, DateTime, ForeignKey, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.db.base import Base
+
+from backend.app.models.user import User
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from backend.app.models.document import Document
 
 class Project(Base):
     __tablename__ = "projects"
@@ -20,7 +26,7 @@ class Project(Base):
     description: Mapped[str | None] = mapped_column(Text)
     created_at: Mapped[datetime] = mapped_column(
         DateTime,
-        default=datetime.now(timezone.utc)
+        server_default=func.now(),
     )
     owner: Mapped["User"] = relationship(back_populates="projects")
     documents: Mapped[list["Document"]] = relationship(

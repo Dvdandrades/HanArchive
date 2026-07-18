@@ -1,8 +1,16 @@
 from __future__ import annotations
-from datetime import datetime, timezone
-from sqlalchemy import String, Date, DateTime, ForeignKey, Integer
+from datetime import datetime
+from sqlalchemy import String, Date, DateTime, ForeignKey, Integer, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.db.base import Base
+from backend.app.models.analysis import Analysis
+from backend.app.models.embedding import Embedding
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from backend.app.models.text import Text
+    from backend.app.models.project import Project
 
 class Document(Base):
     __tablename__ = "documents"
@@ -31,10 +39,18 @@ class Document(Base):
     pages: Mapped[int | None] = mapped_column(Integer)
     created_at: Mapped[datetime] = mapped_column(
         DateTime,
-        default=datetime.now(timezone.utc)
+        server_default=func.now(),
     )
     project: Mapped["Project"] = relationship(back_populates="documents")
     texts: Mapped[list["Text"]] = relationship(
+        back_populates="document",
+        cascade="all, delete-orphan",
+    )
+    analyses: Mapped[list["Analysis"]] = relationship(
+        back_populates="document",
+        cascade="all, delete-orphan",
+    )
+    embeddings: Mapped[list["Embedding"]] = relationship(
         back_populates="document",
         cascade="all, delete-orphan",
     )

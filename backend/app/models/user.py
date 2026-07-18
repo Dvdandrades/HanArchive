@@ -1,8 +1,9 @@
 from __future__ import annotations
-from datetime import datetime, timezone
+from datetime import datetime
 from sqlalchemy import String, DateTime, Boolean
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.db.base import Base
+from backend.app.models.project import Project
 
 class User(Base):
     __tablename__ = "users"
@@ -33,7 +34,7 @@ class User(Base):
     )
     created_at: Mapped[datetime] = mapped_column(
         DateTime,
-        default=datetime.now(timezone.utc),
+        server_default=func.now(),
     )
     projects: Mapped[list["Project"]] = relationship(
         back_populates="owner",
