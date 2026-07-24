@@ -5,6 +5,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
 
+
 class Event(Base):
     __tablename__ = "events"
 
@@ -14,7 +15,7 @@ class Event(Base):
     )
     title: Mapped[str | None] = mapped_column(String(300))
     start_date: Mapped[date | None] = mapped_column(Date)
-    end_date : Mapped[date | None] = mapped_column(Date)
+    end_date: Mapped[date | None] = mapped_column(Date)
     dynasty: Mapped[str | None] = mapped_column(String(100))
     description: Mapped[str | None] = mapped_column(Text)
     entity = relationship(

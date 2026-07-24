@@ -5,6 +5,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.db.base import Base
 from backend.app.models.text import Text
 
+
 class Token(Base):
     __tablename__ = "tokens"
     __table_args__ = (
@@ -35,7 +36,7 @@ class Token(Base):
         String(30),
         nullable=False,
     )
-    reading: Mapped[str | None] = mapped_column(String(120)) 
+    reading: Mapped[str | None] = mapped_column(String(120))
     script: Mapped[str | None] = mapped_column(String(30))
     start_char: Mapped[int] = mapped_column(
         Integer,

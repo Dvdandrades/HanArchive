@@ -6,6 +6,7 @@ from pgvector.sqlalchemy import Vector
 
 from app.db.base import Base
 
+
 class Embedding(Base):
     __tablename__ = "embeddings"
 

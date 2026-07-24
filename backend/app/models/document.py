@@ -12,9 +12,10 @@ if TYPE_CHECKING:
     from backend.app.models.text import Text
     from backend.app.models.project import Project
 
+
 class Document(Base):
     __tablename__ = "documents"
-    
+
     id: Mapped[int] = mapped_column(primary_key=True)
     project_id: Mapped[int] = mapped_column(
         ForeignKey("projects.id", ondelete="CASCADE"),

@@ -10,9 +10,10 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from backend.app.models.document import Document
 
+
 class Project(Base):
     __tablename__ = "projects"
-    
+
     id: Mapped[int] = mapped_column(primary_key=True)
     owner_id: Mapped[int] = mapped_column(
         ForeignKey("users.id", ondelete="CASCADE"),

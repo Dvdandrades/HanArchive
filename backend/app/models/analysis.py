@@ -1,10 +1,19 @@
 from __future__ import annotations
 from datetime import datetime
 from enum import Enum
-from sqlalchemy import DateTime, Enum as SQLEnum, ForeignKey, Integer, JSON, String, func
+from sqlalchemy import (
+    DateTime,
+    Enum as SQLEnum,
+    ForeignKey,
+    Integer,
+    JSON,
+    String,
+    func,
+)
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
+
 
 class AnalysisStatus(str, Enum):
     PENDING = "pending"
@@ -12,9 +21,10 @@ class AnalysisStatus(str, Enum):
     COMPLETED = "completed"
     FAILED = "failed"
 
+
 class Analysis(Base):
     __tablename__ = "analyses"
-    
+
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     document_id: Mapped[int] = mapped_column(
         ForeignKey("documents.id", ondelete="CASCADE"),

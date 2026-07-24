@@ -1,10 +1,20 @@
 from __future__ import annotations
 from datetime import datetime
 from enum import Enum
-from sqlalchemy import DateTime, Enum as SQLEnum, Float, ForeignKey, Integer, String, Text, func
+from sqlalchemy import (
+    DateTime,
+    Enum as SQLEnum,
+    Float,
+    ForeignKey,
+    Integer,
+    String,
+    Text,
+    func,
+)
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
+
 
 class EntityType(str, Enum):
     PERSON = "person"
@@ -14,6 +24,7 @@ class EntityType(str, Enum):
     DYNASTY = "dynasty"
     TITLE = "title"
     OTHER = "other"
+
 
 class Entity(Base):
     __tablename__ = "entities"
@@ -69,4 +80,6 @@ class Entity(Base):
     )
 
     def __repr__(self):
-        return f"<Entity(id={self.id}, type={self.entity_type}, surface='{self.surface}')>"
+        return (
+            f"<Entity(id={self.id}, type={self.entity_type}, surface='{self.surface}')>"
+        )

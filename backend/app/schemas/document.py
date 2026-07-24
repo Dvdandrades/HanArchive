@@ -2,6 +2,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from datetime import datetime
 from typing import Optional
 
+
 class DocumentBase(BaseModel):
     title: str = Field(..., min_length=3, max_length=255)
     description: Optional[str] = None
@@ -9,8 +10,10 @@ class DocumentBase(BaseModel):
     dynasty: Optional[str] = None
     source: Optional[str] = None
 
+
 class DocumentCreate(DocumentBase):
     project_id: int
+
 
 class DocumentUpdate(BaseModel):
     title: Optional[str] = None
@@ -19,10 +22,12 @@ class DocumentUpdate(BaseModel):
     dynasty: Optional[str] = None
     source: Optional[str] = None
 
+
 class DocumentUploadResponse(BaseModel):
     id: int
     filename: str
     message: str
+
 
 class DocumentSummary(BaseModel):
     id: int

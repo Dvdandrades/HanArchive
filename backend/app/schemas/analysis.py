@@ -3,6 +3,7 @@ from enum import Enum
 from typing import Optional
 from pydantic import BaseModel, ConfigDict
 
+
 class AnalysisType(str, Enum):
     TOKENIZATION = "tokenization"
     NER = "ner"
@@ -11,23 +12,27 @@ class AnalysisType(str, Enum):
     NETWORK = "network"
     COMPLETE = "complete"
 
+
 class AnalysisStatus(str, Enum):
     PENDING = "pending"
     RUNNING = "running"
     FINISHED = "finished"
     FAILED = "failed"
 
+
 class AnalysisRequest(BaseModel):
     document_id: int
     analysis_type: AnalysisType
+
 
 class AnalysisResponse(BaseModel):
     task_id: str
     status: AnalysisStatus
 
+
 class AnalysisResult(BaseModel):
     model_config = ConfigDict(from_attributes=True)
-    
+
     id: int
     document_id: int
     analysis_type: AnalysisType
@@ -37,6 +42,7 @@ class AnalysisResult(BaseModel):
     execution_time: Optional[float]
     model_name: Optional[str]
     message: Optional[str]
+
 
 class AnalysisStatistics(BaseModel):
     documents_processed: int

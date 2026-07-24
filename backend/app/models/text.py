@@ -11,6 +11,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from backend.app.models.document import Document
 
+
 class Text(Base):
     __tablename__ = "texts"
     id: Mapped[int] = mapped_column(primary_key=True)
